@@ -44,13 +44,13 @@
     </div>
   </header>
 
-  <!-- Global API Key Warning Banner (shown if GEMINI_API_KEY is not set) -->
+  <!-- Global API Key Warning Banner (shown if API key is not set) -->
   <aside id="apiKeyWarningBanner" class="api-warning-banner hidden" role="alert">
     <div class="warning-content">
       <div class="warning-icon">⚠️</div>
       <div class="warning-message">
-        <strong>Gemini API Key Required:</strong>
-        <span>Please add your <code>GEMINI_API_KEY</code> to the <code>.env</code> file in the project directory. Get a free key at <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.</span>
+        <strong>API Key Required:</strong>
+        <span>Please configure your API key in the server environment.</span>
       </div>
     </div>
     <button id="dismissWarningBtn" class="banner-dismiss" aria-label="Dismiss notice">&times;</button>
@@ -64,7 +64,7 @@
       <section class="generator-panel card">
         <div class="panel-header">
           <h2>Create Your Recipe</h2>
-          <p class="panel-desc">Add the ingredients you have and choose your preferences. Gemini AI will craft a custom recipe.</p>
+          <p class="panel-desc">Add the ingredients you have and choose your preferences. Our AI chef will craft a custom recipe.</p>
         </div>
 
         <form id="recipeForm" class="recipe-form" novalidate>
@@ -226,7 +226,7 @@
           <div class="form-actions">
             <button type="submit" id="generateBtn" class="btn btn-primary btn-lg btn-block">
               <span class="btn-icon">✨</span>
-              <span class="btn-text">Generate Recipe with Gemini</span>
+              <span class="btn-text">Generate Recipe</span>
             </button>
             <p class="form-tip">Tip: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to generate quickly.</p>
           </div>
@@ -244,7 +244,7 @@
             <div class="empty-sparkles">✨</div>
           </div>
           <h3>Your Culinary Canvas Awaits</h3>
-          <p>Add your available ingredients on the left and select your preferences. Gemini AI will craft an original, step-by-step recipe tailored just for you.</p>
+          <p>Add your available ingredients on the left and select your preferences. Our AI chef will craft an original, step-by-step recipe tailored just for you.</p>
           <div class="empty-features">
             <div class="feature-item">
               <span class="feature-icon">⏱️</span>
@@ -456,7 +456,7 @@
   <!-- Footer -->
   <footer class="app-footer">
     <div class="footer-container">
-      <p>Powered by <strong>Google Gemini API</strong> &amp; <strong>Node.js</strong> &bull; Free-Tier Eligible &bull; No Data Saved</p>
+      <p>CookPilot &bull; Intelligent Recipe Engine &bull; No Personal Data Saved</p>
     </div>
   </footer>
 

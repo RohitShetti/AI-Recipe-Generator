@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (state.apiKeyConfigured) {
         elements.apiStatusBadge.className = 'status-badge status-ready';
-        elements.apiStatusText.textContent = `Gemini Ready (${data.model || 'Flash'})`;
+        elements.apiStatusText.textContent = 'AI Chef Ready';
         elements.apiKeyWarningBanner.classList.add('hidden');
       } else {
         elements.apiStatusBadge.className = 'status-badge status-warning';
