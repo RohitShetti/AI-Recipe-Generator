@@ -54,12 +54,13 @@ Preferences & Constraints:
 ${notes ? `- Special Requests / Chef Notes: ${notes}` : ''}
 
 Guidelines:
-1. Make the user-provided ingredients the core highlight of the recipe.
-2. Provide exact measurements with standard units for every ingredient (e.g., "2 tbsp", "200g", "1/2 cup").
-3. Write clear, sequentially ordered cooking instructions with specific sensory cues (e.g., "sauté until fragrant and translucent, about 3 minutes").
-4. Keep the total preparation and cooking time strictly within the requested maximum cooking time if specified.
-5. Provide realistic nutritional estimates per serving and a comprehensive nutrition disclaimer.
-6. Return only the structured recipe matching the required JSON schema.
+1. FOOD SAFETY & VALIDITY CHECK: First, rigorously inspect every single item in the ingredients list. If ANY item is NOT edible food (for example: vehicles like car or bike, electronics, machinery, metal, plastic, chemicals, furniture, clothing, or nonsensical non-food items), you MUST set "isValidFood": false and provide a polite, clear explanation in "invalidReason" stating which items are not edible and asking the user to provide real food ingredients.
+2. If all ingredients are genuine edible food items, set "isValidFood": true and "invalidReason": "" and craft a delicious culinary recipe where the user-provided ingredients are the core highlight.
+3. Provide exact measurements with standard units for every ingredient (e.g., "2 tbsp", "200g", "1/2 cup").
+4. Write clear, sequentially ordered cooking instructions with specific sensory cues (e.g., "sauté until fragrant and translucent, about 3 minutes").
+5. Keep the total preparation and cooking time strictly within the requested maximum cooking time if specified.
+6. Provide realistic nutritional estimates per serving and a comprehensive nutrition disclaimer.
+7. Return only the structured recipe matching the required JSON schema.
 `.trim();
 }
 
@@ -170,6 +171,24 @@ You must strictly return valid JSON that conforms exactly to the provided schema
     error.status = 502;
     error.code = 'SCHEMA_VALIDATION_FAILED';
     error.details = validationResult.error.issues;
+    throw error;
+  }
+
+  // Check if the AI detected non-edible ingredients (e.g., car, bike, brick, plastic)
+  if (validationResult.data.isValidFood === false) {
+    const reason = validationResult.data.invalidReason ||
+      "Some of the entered items (such as vehicles, machinery, or non-food objects) are not edible ingredients. Please enter real food ingredients!";
+    const error = new Error(reason);
+    error.status = 400;
+    error.code = 'NON_EDIBLE_INPUT';
+    throw error;
+  }
+
+  // Ensure ingredients were returned
+  if (!validationResult.data.ingredients || validationResult.data.ingredients.length === 0) {
+    const error = new Error('Could not generate a recipe with the provided ingredients. Please try adding different items.');
+    error.status = 400;
+    error.code = 'NO_INGREDIENTS';
     throw error;
   }
 

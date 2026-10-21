@@ -28,6 +28,14 @@ export const recipeRequestSchema = z.object({
 export const geminiRecipeResponseSchema = {
   type: 'object',
   properties: {
+    isValidFood: {
+      type: 'boolean',
+      description: 'Set to false if ANY of the provided ingredients are not edible food (e.g. vehicles like car or bike, electronics, plastics, metals, toxic materials, furniture, or non-food objects). Set to true only if all ingredients are valid food/culinary items.'
+    },
+    invalidReason: {
+      type: 'string',
+      description: 'If isValidFood is false, write a polite, friendly explanation identifying which items are not food and inviting the user to enter real cooking ingredients. If isValidFood is true, set to empty string.'
+    },
     title: {
       type: 'string',
       description: 'The appetizing, creative title of the recipe'
@@ -168,12 +176,14 @@ export const geminiRecipeResponseSchema = {
  * Strict server-side Zod validator for Gemini output
  */
 export const recipeResponseValidationSchema = z.object({
-  title: z.string().trim().min(2, 'Recipe title is missing or too short'),
-  description: z.string().trim().min(5, 'Recipe description is too short'),
-  servings: z.number().int().min(1).max(24),
-  prepTimeMinutes: z.number().int().nonnegative(),
-  cookTimeMinutes: z.number().int().nonnegative(),
-  totalTimeMinutes: z.number().int().nonnegative(),
+  isValidFood: z.boolean().default(true),
+  invalidReason: z.string().trim().nullable().optional().transform(v => v || ''),
+  title: z.string().trim().min(2, 'Recipe title is missing or too short').optional().default('Custom Recipe'),
+  description: z.string().trim().min(5, 'Recipe description is too short').optional().default('A customized culinary creation.'),
+  servings: z.number().int().min(1).max(24).optional().default(2),
+  prepTimeMinutes: z.number().int().nonnegative().optional().default(10),
+  cookTimeMinutes: z.number().int().nonnegative().optional().default(15),
+  totalTimeMinutes: z.number().int().nonnegative().optional().default(25),
   difficulty: z.string().trim().default('Intermediate'),
   cuisine: z.string().trim().default('General'),
   diet: z.string().trim().default('Standard'),
@@ -186,7 +196,8 @@ export const recipeResponseValidationSchema = z.object({
         notes: z.string().trim().nullable().optional().transform(v => v || '')
       })
     )
-    .min(1, 'Recipe must have at least one ingredient'),
+    .optional()
+    .default([]),
   instructions: z
     .array(
       z.object({
@@ -195,7 +206,8 @@ export const recipeResponseValidationSchema = z.object({
         tip: z.string().trim().nullable().optional().transform(v => v || '')
       })
     )
-    .min(1, 'Recipe must have at least one step'),
+    .optional()
+    .default([]),
   chefTips: z
     .array(z.string().trim())
     .nullable()
@@ -214,5 +226,6 @@ export const recipeResponseValidationSchema = z.object({
   nutritionDisclaimer: z
     .string()
     .trim()
-    .min(10, 'Nutrition disclaimer is missing or too short')
+    .optional()
+    .default('Nutrition estimates are automated approximations.')
 });
