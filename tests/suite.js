@@ -43,7 +43,7 @@ test('GET / serves index.html with correct branding and form', async () => {
   const res = await fetch(`${baseUrl}/`);
   assert.equal(res.status, 200);
   const html = await res.text();
-  assert.ok(html.includes('SavorAI'));
+  assert.ok(html.includes('CookPilot'));
   assert.ok(html.includes('recipeForm'));
   assert.ok(html.includes('ingredientInput'));
 });

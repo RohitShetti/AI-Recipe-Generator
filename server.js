@@ -53,7 +53,7 @@ let server;
 if (process.env.NODE_ENV !== 'test') {
   server = app.listen(PORT, () => {
     console.log(`=========================================`);
-    console.log(`🍳 AI Recipe Generator Server Running!`);
+    console.log(`🌱 CookPilot Server Running!`);
     console.log(`📍 URL: http://localhost:${PORT}`);
     console.log(`🤖 Model: ${config.geminiModel}`);
     console.log(`🔑 API Key Configured: ${config.isApiKeyConfigured ? 'YES (Secure on server)' : 'NO (Add GEMINI_API_KEY in .env)'}`);

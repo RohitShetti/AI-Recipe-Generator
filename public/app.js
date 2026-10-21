@@ -1,5 +1,5 @@
 /**
- * SavorAI — AI Recipe Generator Frontend Application
+ * CookPilot — AI Recipe Generator Frontend Application
  * Vanilla JavaScript (ES6+)
  */
 
@@ -653,7 +653,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const scaleFactor = state.currentServings / state.baseServings;
 
     const lines = [
-      `🍳 ${recipe.title}`,
+      `🥗 ${recipe.title} (via CookPilot)`,
       `"${recipe.description}"`,
       '',
       `Servings: ${state.currentServings} | Prep: ${recipe.prepTimeMinutes}m | Cook: ${recipe.cookTimeMinutes}m | Total: ${recipe.totalTimeMinutes}m`,

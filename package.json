@@ -1,7 +1,7 @@
 {
-  "name": "ai-recipe-generator",
+  "name": "cookpilot",
   "version": "1.0.0",
-  "description": "AI Recipe Generator web application powered by Express and Google Gemini API",
+  "description": "CookPilot — AI Recipe Generator web application powered by Express and Google Gemini API",
   "type": "module",
   "main": "server.js",
   "scripts": {

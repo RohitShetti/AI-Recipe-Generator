@@ -1,8 +1,8 @@
-# 🍳 SavorAI — AI Recipe Generator
+# 🌱 CookPilot — AI Recipe Generator
 
 An intelligent web application that turns whatever ingredients you have in your kitchen into an authentic, chef-quality recipe tailored to your cuisine, diet, meal type, cooking time, and skill level.
 
-Powered by **Node.js**, **Express**, and the **Google Gemini API** using currently supported models eligible for Google's **Free Tier** (`gemini-2.5-flash`).
+Powered by **Node.js**, **Express**, and the **Google Gemini API** using currently supported models eligible for Google's **Free Tier** (`gemini-3.5-flash`).
 
 ---
 

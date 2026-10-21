@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a3e635"/>
+      <stop offset="100%" stop-color="#22c55e"/>
+    </linearGradient>
+    <linearGradient id="sparkleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Squircle Base -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#bgGrad)" />
+
+  <!-- Chef Hat Base Band -->
+  <rect x="18" y="39" width="28" height="8" rx="2" fill="#ffffff" />
+  <line x1="22" y1="43" x2="42" y2="43" stroke="#e2e8f0" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- Chef Hat Puffs -->
+  <path d="M19 39 C15 39 13 32 17 27 C15 22 22 17 27 20 C30 15 38 15 40 21 C45 18 50 23 48 29 C52 33 50 39 45 39 Z" fill="#ffffff" />
+
+  <!-- Fresh Organic Sprout / Herb Leaves (Vegetarian Emblem) -->
+  <!-- Left Leaf -->
+  <path d="M32 23 C25 21 23 13 31 11 C33 16 32 21 32 23 Z" fill="url(#leafGrad)" />
+  <!-- Right Leaf -->
+  <path d="M32 23 C37 19 44 20 42 12 C35 13 33 19 32 23 Z" fill="#4ade80" />
+  <!-- Stem -->
+  <path d="M32 24 Q32 28 32 30" stroke="#16a34a" stroke-width="2" stroke-linecap="round" fill="none" />
+
+  <!-- Culinary Stars / Sparkles -->
+  <path d="M47 14 Q47 18 49 18 Q47 18 47 22 Q47 18 45 18 Q47 18 47 14 Z" fill="url(#sparkleGrad)" />
+  <circle cx="15" cy="18" r="1.5" fill="#fef08a" />
+</svg>
