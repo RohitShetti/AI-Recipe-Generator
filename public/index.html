@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SavorAI — Intelligent AI Recipe Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <span>🍳</span>
+        </div>
+        <div class="brand-text">
+          <h1>Savor<span>AI</span></h1>
+          <p class="tagline">Smart Chef in Your Kitchen</p>
+        </div>
+      </div>
+
+      <div class="header-status">
+        <div id="apiStatusBadge" class="status-badge status-checking">
+          <span class="status-dot"></span>
+          <span id="apiStatusText">Checking API...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Global API Key Warning Banner (shown if GEMINI_API_KEY is not set) -->
+  <aside id="apiKeyWarningBanner" class="api-warning-banner hidden" role="alert">
+    <div class="warning-content">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-message">
+        <strong>Gemini API Key Required:</strong>
+        <span>Please add your <code>GEMINI_API_KEY</code> to the <code>.env</code> file in the project directory. Get a free key at <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a>.</span>
+      </div>
+    </div>
+    <button id="dismissWarningBtn" class="banner-dismiss" aria-label="Dismiss notice">&times;</button>
+  </aside>
+
+  <!-- Main Content Layout -->
+  <main class="app-main">
+    <div class="app-grid">
+
+      <!-- LEFT COLUMN: Input Form -->
+      <section class="generator-panel card">
+        <div class="panel-header">
+          <h2>Create Your Recipe</h2>
+          <p class="panel-desc">Add the ingredients you have and choose your preferences. Gemini AI will craft a custom recipe.</p>
+        </div>
+
+        <form id="recipeForm" class="recipe-form" novalidate>
+
+          <!-- Ingredients Section -->
+          <div class="form-group">
+            <div class="label-row">
+              <label for="ingredientInput">
+                Ingredients <span class="required">*</span>
+              </label>
+              <span id="ingredientCount" class="counter-badge">0 added</span>
+            </div>
+
+            <!-- Chips Container -->
+            <div class="chips-container" id="chipsContainer">
+              <!-- Dynamically populated ingredient tags -->
+              <input
+                type="text"
+                id="ingredientInput"
+                class="chips-input"
+                placeholder="Type ingredient and press Enter or comma..."
+                autocomplete="off"
+              >
+            </div>
+
+            <!-- Input Action Row -->
+            <div class="ingredient-actions">
+              <button type="button" id="addIngredientBtn" class="btn btn-secondary btn-sm">
+                <span>➕ Add</span>
+              </button>
+              <button type="button" id="clearIngredientsBtn" class="btn btn-text btn-sm text-muted">
+                Clear all
+              </button>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div class="suggestions-wrapper">
+              <span class="suggestions-label">Quick suggestions:</span>
+              <div class="suggestions-list" id="suggestionsList">
+                <button type="button" class="suggestion-chip" data-ingredient="Eggs">+ Eggs</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Garlic">+ Garlic</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Tomatoes">+ Tomatoes</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Chicken breast">+ Chicken</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Spinach">+ Spinach</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Olive oil">+ Olive oil</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Pasta">+ Pasta</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Onion">+ Onion</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Rice">+ Rice</button>
+                <button type="button" class="suggestion-chip" data-ingredient="Cheese">+ Cheese</button>
+              </div>
+            </div>
+            <div id="ingredientError" class="field-error hidden">Please add at least one ingredient.</div>
+          </div>
+
+          <!-- Preferences Grid -->
+          <div class="preferences-grid">
+
+            <!-- Cuisine Dropdown -->
+            <div class="form-group">
+              <label for="cuisineSelect">Cuisine</label>
+              <select id="cuisineSelect" class="form-select">
+                <option value="Any">Chef's Choice (Any)</option>
+                <option value="Italian">Italian</option>
+                <option value="Mexican">Mexican</option>
+                <option value="Indian">Indian</option>
+                <option value="Mediterranean">Mediterranean</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Japanese">Japanese</option>
+                <option value="Thai">Thai</option>
+                <option value="French">French</option>
+                <option value="American">American</option>
+                <option value="Middle Eastern">Middle Eastern</option>
+                <option value="Spanish">Spanish</option>
+                <option value="Korean">Korean</option>
+              </select>
+            </div>
+
+            <!-- Diet Dropdown -->
+            <div class="form-group">
+              <label for="dietSelect">Dietary Preference</label>
+              <select id="dietSelect" class="form-select">
+                <option value="Any">None / Any Diet</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Gluten-Free">Gluten-Free</option>
+                <option value="Dairy-Free">Dairy-Free</option>
+                <option value="Keto">Keto / Low-Carb</option>
+                <option value="Paleo">Paleo</option>
+                <option value="Halal">Halal</option>
+                <option value="Kosher">Kosher</option>
+                <option value="Pescatarian">Pescatarian</option>
+              </select>
+            </div>
+
+            <!-- Meal Type Dropdown -->
+            <div class="form-group">
+              <label for="mealTypeSelect">Meal Type</label>
+              <select id="mealTypeSelect" class="form-select">
+                <option value="Any">Any Meal Type</option>
+                <option value="Breakfast">Breakfast</option>
+                <option value="Brunch">Brunch</option>
+                <option value="Lunch">Lunch</option>
+                <option value="Dinner">Dinner</option>
+                <option value="Snack">Quick Snack</option>
+                <option value="Dessert">Dessert</option>
+                <option value="Appetizer">Appetizer / Side Dish</option>
+              </select>
+            </div>
+
+            <!-- Max Cooking Time Dropdown -->
+            <div class="form-group">
+              <label for="timeSelect">Max Cooking Time</label>
+              <select id="timeSelect" class="form-select">
+                <option value="Any">No Time Limit</option>
+                <option value="Under 15 minutes">Under 15 mins (Express)</option>
+                <option value="Under 30 minutes">Under 30 mins (Quick)</option>
+                <option value="Under 45 minutes">Under 45 mins</option>
+                <option value="Under 60 minutes">Under 60 mins</option>
+                <option value="Over 60 minutes">Over 60 mins (Slow Cook)</option>
+              </select>
+            </div>
+
+            <!-- Cooking Skill Dropdown -->
+            <div class="form-group full-width">
+              <label for="skillSelect">Cooking Skill Level</label>
+              <select id="skillSelect" class="form-select">
+                <option value="Beginner">Beginner (Simple techniques, minimal pots & pans)</option>
+                <option value="Intermediate" selected>Intermediate (Standard home cooking)</option>
+                <option value="Advanced">Advanced (Gourmet techniques & complex flavors)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Extra Options -->
+          <div class="extras-section">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pantryStaplesCheck" checked>
+              <span class="checkbox-custom"></span>
+              <span class="checkbox-text">
+                <strong>Allow basic pantry staples</strong>
+                <small>Permits salt, black pepper, cooking oil, and water in addition to your ingredients.</small>
+              </span>
+            </label>
+
+            <div class="form-group notes-group">
+              <label for="notesInput">Special Notes or Requests (Optional)</label>
+              <input
+                type="text"
+                id="notesInput"
+                class="form-input"
+                placeholder="e.g., extra spicy, kid-friendly, one-pot meal..."
+                maxlength="250"
+              >
+            </div>
+          </div>
+
+          <!-- Submit Action -->
+          <div class="form-actions">
+            <button type="submit" id="generateBtn" class="btn btn-primary btn-lg btn-block">
+              <span class="btn-icon">✨</span>
+              <span class="btn-text">Generate Recipe with Gemini</span>
+            </button>
+            <p class="form-tip">Tip: Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to generate quickly.</p>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: Recipe Display Container -->
+      <section class="display-panel card" id="displayPanel">
+
+        <!-- 1. EMPTY STATE -->
+        <div id="emptyState" class="state-container empty-state">
+          <div class="empty-illustration">
+            <div class="chef-icon-bounce">👨‍🍳</div>
+            <div class="empty-sparkles">✨</div>
+          </div>
+          <h3>Your Culinary Canvas Awaits</h3>
+          <p>Add your available ingredients on the left and select your preferences. Gemini AI will craft an original, step-by-step recipe tailored just for you.</p>
+          <div class="empty-features">
+            <div class="feature-item">
+              <span class="feature-icon">⏱️</span>
+              <span>Exact prep & cook times</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⚖️</span>
+              <span>Accurate ingredient quantities</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🥗</span>
+              <span>Nutritional estimates & tips</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LOADING STATE -->
+        <div id="loadingState" class="state-container loading-state hidden" aria-live="polite">
+          <div class="cooking-loader">
+            <div class="pan-wrapper">
+              <div class="pan">
+                <div class="food-sizzle"></div>
+              </div>
+              <div class="pan-handle"></div>
+            </div>
+            <div class="steam-container">
+              <span class="steam steam-1"></span>
+              <span class="steam steam-2"></span>
+              <span class="steam steam-3"></span>
+            </div>
+          </div>
+          <h3 id="loadingTitle">Consulting the AI Chef...</h3>
+          <p id="loadingSubtitle" class="loading-subtitle">Analyzing flavor profiles and cooking techniques...</p>
+
+          <!-- Skeleton Preview -->
+          <div class="skeleton-recipe">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-line skeleton-desc"></div>
+            <div class="skeleton-stats">
+              <div class="skeleton-box"></div>
+              <div class="skeleton-box"></div>
+              <div class="skeleton-box"></div>
+              <div class="skeleton-box"></div>
+            </div>
+            <div class="skeleton-columns">
+              <div class="skeleton-col">
+                <div class="skeleton-line skeleton-h"></div>
+                <div class="skeleton-line skeleton-item"></div>
+                <div class="skeleton-line skeleton-item"></div>
+                <div class="skeleton-line skeleton-item"></div>
+              </div>
+              <div class="skeleton-col">
+                <div class="skeleton-line skeleton-h"></div>
+                <div class="skeleton-line skeleton-item"></div>
+                <div class="skeleton-line skeleton-item"></div>
+                <div class="skeleton-line skeleton-item"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. ERROR STATE -->
+        <div id="errorState" class="state-container error-state hidden" role="alert">
+          <div class="error-icon">⚠️</div>
+          <h3 id="errorTitle">Unable to Generate Recipe</h3>
+          <p id="errorMessage" class="error-message">An error occurred while contacting the AI service.</p>
+          <div class="error-actions">
+            <button type="button" id="retryBtn" class="btn btn-primary">
+              <span>🔄 Try Again</span>
+            </button>
+            <button type="button" id="dismissErrorBtn" class="btn btn-secondary">
+              <span>Go Back</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. RECIPE READY STATE -->
+        <article id="recipeContainer" class="recipe-container hidden">
+
+          <!-- Recipe Action Bar -->
+          <div class="recipe-top-actions">
+            <button type="button" id="regenerateBtn" class="btn btn-outline btn-sm" title="Generate another recipe with the same inputs">
+              <span>🔄 Regenerate</span>
+            </button>
+            <div class="action-buttons-group">
+              <button type="button" id="copyRecipeBtn" class="btn btn-outline btn-sm" title="Copy recipe to clipboard">
+                <span class="btn-icon">📋</span>
+                <span class="btn-label">Copy</span>
+              </button>
+              <button type="button" id="printRecipeBtn" class="btn btn-outline btn-sm" title="Print recipe or save as PDF">
+                <span class="btn-icon">🖨️</span>
+                <span class="btn-label">Print</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Recipe Header -->
+          <header class="recipe-header">
+            <div class="badges-row" id="recipeBadges">
+              <!-- Dynamically rendered badges -->
+            </div>
+            <h2 id="recipeTitle" class="recipe-title">Delicious AI Recipe</h2>
+            <p id="recipeDescription" class="recipe-description">A wonderful culinary creation made just for you.</p>
+          </header>
+
+          <!-- Quick Stats Bar -->
+          <div class="stats-bar">
+            <!-- Servings with interactive adjuster -->
+            <div class="stat-card stat-servings">
+              <span class="stat-label">Servings</span>
+              <div class="servings-stepper">
+                <button type="button" id="decreaseServingsBtn" class="stepper-btn" aria-label="Decrease servings">&minus;</button>
+                <span id="statServings" class="stat-value">2</span>
+                <button type="button" id="increaseServingsBtn" class="stepper-btn" aria-label="Increase servings">&plus;</button>
+              </div>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Prep Time</span>
+              <span id="statPrepTime" class="stat-value">15m</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Cook Time</span>
+              <span id="statCookTime" class="stat-value">25m</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Total Time</span>
+              <span id="statTotalTime" class="stat-value">40m</span>
+            </div>
+          </div>
+
+          <!-- Recipe Body (Ingredients & Instructions) -->
+          <div class="recipe-content-grid">
+
+            <!-- Ingredients Column -->
+            <section class="ingredients-section">
+              <div class="section-title-row">
+                <h3>Ingredients</h3>
+                <span class="section-subtitle">Check off as you prep</span>
+              </div>
+              <ul id="ingredientsList" class="ingredients-checklist">
+                <!-- Dynamically rendered ingredient items -->
+              </ul>
+            </section>
+
+            <!-- Instructions Column -->
+            <section class="instructions-section">
+              <div class="section-title-row">
+                <h3>Instructions</h3>
+                <span class="section-subtitle">Follow step by step</span>
+              </div>
+              <ol id="instructionsList" class="instructions-steplist">
+                <!-- Dynamically rendered instruction items -->
+              </ol>
+            </section>
+
+          </div>
+
+          <!-- Chef Tips (if available) -->
+          <section id="chefTipsSection" class="chef-tips-card">
+            <div class="tips-header">
+              <span class="tips-icon">💡</span>
+              <h4>Chef's Pro Tips</h4>
+            </div>
+            <ul id="chefTipsList" class="tips-list">
+              <!-- Dynamically rendered chef tips -->
+            </ul>
+          </section>
+
+          <!-- Nutrition Estimate -->
+          <section class="nutrition-section">
+            <div class="nutrition-header">
+              <h4>Estimated Nutrition (Per Serving)</h4>
+            </div>
+            <div class="nutrition-grid">
+              <div class="nutrition-card">
+                <span class="nutrition-val" id="nutrCalories">--</span>
+                <span class="nutrition-lbl">Calories</span>
+              </div>
+              <div class="nutrition-card">
+                <span class="nutrition-val" id="nutrProtein">--</span>
+                <span class="nutrition-lbl">Protein</span>
+              </div>
+              <div class="nutrition-card">
+                <span class="nutrition-val" id="nutrCarbs">--</span>
+                <span class="nutrition-lbl">Carbs</span>
+              </div>
+              <div class="nutrition-card">
+                <span class="nutrition-val" id="nutrFat">--</span>
+                <span class="nutrition-lbl">Fat</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Nutrition Disclaimer -->
+          <footer class="nutrition-disclaimer">
+            <div class="disclaimer-icon">ℹ️</div>
+            <p id="nutritionDisclaimerText">
+              Nutrition information is an automated estimate and may vary based on exact brands, portion sizes, and preparation methods. Consult a healthcare professional for specific dietary needs.
+            </p>
+          </footer>
+
+        </article>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>Powered by <strong>Google Gemini API</strong> &amp; <strong>Node.js</strong> &bull; Free-Tier Eligible &bull; No Data Saved</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
